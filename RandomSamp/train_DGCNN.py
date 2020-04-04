@@ -107,11 +107,6 @@ tmp = scio.loadmat(save_filepath)
 pts_idx_list = tmp['pts_idx_list']
 file_idx_list = np.zeros(shape=[pts_idx_list.shape[0]])
 data_idx_list = np.arange(0,pts_idx_list.shape[0])
-print('pts_idx_list---',pts_idx_list)
-print('max--',np.max(pts_idx_list))
-print('pts_idx_list---',pts_idx_list.shape)
-print('file_idx_list---',file_idx_list.shape)
-print('data_idx_list---',data_idx_list.shape)
 
 ##### Start Training Epochs
 for epoch in range(0,args.Epoch):

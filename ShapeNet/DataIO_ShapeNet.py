@@ -158,12 +158,12 @@ class ShapeNetIO:
         self.test_file_idx = np.arange(0,self.test_samp_num)
 
 
-        print('len(test_pts_files)------',len(self.test_pts_files))
-        print('len(test_seg_files)------',len(self.test_seg_files))
-        print('len(test_labels)------',len(self.test_labels))
-        print('len(test_samp_num)------',self.test_samp_num)
-        print('len(test_file_idx)------',self.test_file_idx.shape)
-
+        #print('len(test_pts_files)------',len(self.test_pts_files))
+        #print('len(test_seg_files)------',len(self.test_seg_files))
+        #print('len(test_labels)------',len(self.test_labels))
+        #print('len(test_samp_num)------',self.test_samp_num)
+        #print('len(test_file_idx)------',self.test_file_idx.shape)
+    
         ## Intialize test loader
         self.ResetLoader_TestSet()
 
@@ -215,10 +215,13 @@ class ShapeNetIO:
         label = copy.deepcopy(self.train_labels[data_idx])
         seg = copy.deepcopy(self.train_seg[data_idx])
         weak_seg_onehot = np.zeros([mb_size, self.NUM_PART_CATS])
+        weak_seg_num = np.zeros(mb_size)
+        #print('seg[i]',seg[0].shape)
+        
         for i in range(data.shape[0]):
             for j in np.unique(seg[i]):
                 weak_seg_onehot[i,j] = 1
-
+                weak_seg_num[i]+=1
         return True, data, label, seg, weak_seg_onehot, mb_size, file_idx, data_idx
 
 
@@ -257,6 +260,7 @@ class ShapeNetIO:
         for i in range(data.shape[0]):
             for j in np.unique(seg[i]):
                 weak_seg_onehot[i, j] = 1
+        
 
         return True, data, label, seg, weak_seg_onehot, mb_size, file_idx, data_idx
 
@@ -289,6 +293,10 @@ class ShapeNetIO:
         pts, seg = self.load_pts_seg_files(pts_file_to_load, seg_file_to_load, self.objcats[cur_gt_label])
         ori_point_num = len(seg)
 
+        
+        #print('pts',pts.shape)
+        #print('seg',seg.shape,seg[5])
+
         pts = self.pc_normalize(pts)
 
         ## Prepare return variables
@@ -311,10 +319,14 @@ class ShapeNetIO:
 
 
     def Shuffle_TrainSet(self):
+        #print('self.train_data_idx',self.train_data_idx[10:20])
         np.random.shuffle(self.train_data_idx)
         sort = np.argsort(self.train_data_idx)
-        print('self.train_data_idx',self.train_data_idx[10:20])
-        aaa
+        # print('self.train_data_idx',self.train_data_idx[10:20])
+        # np.random.shuffle(self.train_data_idx)
+        # sort = np.argsort(self.train_data_idx)
+        # print('self.train_data_idx',self.train_data_idx[10:20])
+        #print('self.train_data_idx',self.train_data_idx[10:20])
         return sort
 
 

@@ -106,6 +106,7 @@ TrainOp.SetLearningRate(LearningRate=args.LearningRate,BatchSize=args.batchsize)
 TrainOp.DGCNN_SemiSup(batch_size=args.batchsize, point_num=3000)
 
 ##### Restore Checkpoint
+#best_filepath = os.path.join(CHECKPOINT_PATH, 'Checkpoint_round-{}'.format('5'))
 best_filepath = os.path.join(CHECKPOINT_PATH, 'Checkpoint_epoch-{}'.format('best'))
 TrainOp.RestoreCheckPoint(best_filepath)
 
