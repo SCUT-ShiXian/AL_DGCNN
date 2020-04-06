@@ -514,7 +514,7 @@ class ShapeNet_IncompleteSup():
                     Adv_predict = np.argmax(Z_adv[0],axis=-1)
                                 
                     np.seterr(divide='ignore',invalid='ignore')
-                    value[:,partcalss] = np.abs(out)/np.linalg.norm(grad[:,partcalss,:],axis=-1)
+                    value[:,partcalss] = np.abs(out)/(np.linalg.norm(grad[:,partcalss,:],axis=-1) + 0.00000001)
 
 
                 value = value + seg_Onehot_feed[0].astype(np.float32)*(np.max(value)-np.min(value))
@@ -530,11 +530,14 @@ class ShapeNet_IncompleteSup():
                 Adv_predict[temp_idx_list[index_pts_idx_list]] = Ori_predict[temp_idx_list[index_pts_idx_list]]
                 if np.sum((Adv_predict!=Ori_predict)*1)>=num_query:
                     op_while = 0
-                    adv_noise_dis[0] = np.linalg.norm(adv_noise[0],axis=-1) 
-                    adv_noise_dis[0] = adv_noise_dis[0] + (Ori_predict==Adv_predict)*1*(np.max(adv_noise_dis)-np.min(adv_noise_dis))
+                adv_noise_dis[0] = np.linalg.norm(adv_noise[0],axis=-1) 
+                adv_noise_dis[0] = adv_noise_dis[0] + (Ori_predict==Adv_predict)*1*(np.max(adv_noise_dis)-np.min(adv_noise_dis))
 
                 iter += 1
+            print('iter',iter)
 
+            np.savetxt('/data2/lab-shixian/project/ActivePointCloud/Ori_predict.xyz',Ori_predict,fmt='%.6f')
+            np.savetxt('/data2/lab-shixian/project/ActivePointCloud/Adv_predict.xyz',Adv_predict,fmt='%.6f')
 
             whole_adv_noise_dis[START_FEATURE:END_FEATURE, ...] = adv_noise_dis[0:(END_FEATURE-START_FEATURE)]
             START_FEATURE += 1; END_FEATURE += 1

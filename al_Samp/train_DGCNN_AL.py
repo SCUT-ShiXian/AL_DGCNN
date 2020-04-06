@@ -127,54 +127,49 @@ data_idx_list = np.arange(0,pts_idx_list.shape[0])
 
 
 
-def getDataFiles(list_filename):
-    return [line.rstrip() for line in open(list_filename)]
+# def getDataFiles(list_filename):
+#     return [line.rstrip() for line in open(list_filename)]
 
-def load_h5_data_label_seg(h5_filename):
-    f = h5py.File(h5_filename,'r')
-    data = f['data'][:]
-    label = f['label'][:]
-    seg = f['pid'][:]
-    num_data = data.shape[0]
-    data_idx = np.arange(0,num_data)
+# def load_h5_data_label_seg(h5_filename):
+#     f = h5py.File(h5_filename,'r')
+#     data = f['data'][:]
+#     label = f['label'][:]
+#     seg = f['pid'][:]
+#     num_data = data.shape[0]
+#     data_idx = np.arange(0,num_data)
 
-    return (data, label, seg, num_data, data_idx)
+#     return (data, label, seg, num_data, data_idx)
 
-h5_base_path = '/data2/lab-shixian/project/ActivePointCloud/Dataset/ShapeNet/hdf5_data'
-train_file_list = getDataFiles(os.path.join(h5_base_path, 'train_hdf5_file_list.txt'))
+# h5_base_path = '/data2/lab-shixian/project/ActivePointCloud/Dataset/ShapeNet/hdf5_data'
+# train_file_list = getDataFiles(os.path.join(h5_base_path, 'train_hdf5_file_list.txt'))
 
-train_data = []
-train_labels = []
-train_seg = []
-num_train = 0
-train_data_idx = []
-for cur_train_filename in train_file_list:
-    print('cur_train_filename',cur_train_filename)
-    cur_train_data, cur_train_labels, cur_train_seg, cur_num_train, cur_train_data_idx = load_h5_data_label_seg(os.path.join(h5_base_path,cur_train_filename))
-
-
-
-    train_data.append(cur_train_data)
-    train_labels.append(cur_train_labels)
-    train_seg.append(cur_train_seg)
-    train_data_idx.append(cur_train_data_idx+num_train)
-    num_train += cur_num_train
+# train_data = []
+# train_labels = []
+# train_seg = []
+# num_train = 0
+# train_data_idx = []
+# for cur_train_filename in train_file_list:
+#     print('cur_train_filename',cur_train_filename)
+#     cur_train_data, cur_train_labels, cur_train_seg, cur_num_train, cur_train_data_idx = load_h5_data_label_seg(os.path.join(h5_base_path,cur_train_filename))
 
 
 
-    whole_train_data = np.concatenate(train_data)
-    whole_train_labels = np.concatenate(train_labels)
-    whole_train_seg = np.concatenate(train_seg)
-    whole_train_data_idx = np.concatenate(train_data_idx)
-    whole_num_train = num_train
+#     train_data.append(cur_train_data)
+#     train_labels.append(cur_train_labels)
+#     train_seg.append(cur_train_seg)
+#     train_data_idx.append(cur_train_data_idx+num_train)
+#     num_train += cur_num_train
 
 
-# adj = tf_util.pairwise_distance(whole_train_data)
-# nn_idx = tf_util.knn(adj, k=20)   #b*n*20
+
+#     whole_train_data = np.concatenate(train_data)
+#     whole_train_labels = np.concatenate(train_labels)
+#     whole_train_seg = np.concatenate(train_seg)
+#     whole_train_data_idx = np.concatenate(train_data_idx)
+#     whole_num_train = num_train
 
 
-#np.random.shuffle(pts_idx_list)
-#ori_pts_idx_list = pts_idx_list
+
 
 
 
@@ -192,7 +187,7 @@ for rd in range(1, num_round):
         printout('\n\nstart {:d}-th round {:d}-th epoch at {}\n'.format(rd, epoch, time.ctime()),write_flag = args.ExpSum, fid=fid)
 
         #### Shuffle Training Data --- close
-        sort = Loader.Shuffle_TrainSet()
+        data_sort = Loader.Shuffle_TrainSet()
 
         #### Train One Epoch
         train_avg_loss, train_avg_acc = TrainOp.TrainOneEpoch(Loader,file_idx_list,data_idx_list,pts_idx_list)
@@ -227,52 +222,52 @@ for rd in range(1, num_round):
     ##adv
     if query_method == 'adversarial':
         max_iter = 50
-        whole_adv_noise_dis = TrainOp.EvalAdversarialOneEquery(Loader, Eval, num_query, pts_idx_list, sort, 'train', max_iter)
+        whole_adv_noise_dis = TrainOp.EvalAdversarialOneEquery(Loader, Eval, num_query, pts_idx_list, data_sort, 'train', max_iter)
         dataOri = BASE_PATH + '/whole_adv_noise_dis.mat'
         scio.savemat(dataOri, {'whole_adv_noise_dis':whole_adv_noise_dis[100]})
         new_idx_list = np.sort(whole_adv_noise_dis,axis=1)[:,:num_query]  #12137*num_query
         new_pts_idx_list = np.concatenate((pts_idx_list,new_idx_list),axis=1)
         
-    elif query_method == 'adversarial_edges':
-        max_iter = 10
-        #UNFINISHED
-        whole_adv_dis = TrainOp.EvalAdvEdgesEquery(Loader, Eval, num_query, pts_idx_list, index_knn, 'train', max_iter)
-        new_idx_list = np.sort(whole_adv_noise_dis,axis=1)[:,:num_query]  #12137*num_query
-        new_pts_idx_list = np.concatenate((pts_idx_list,new_idx_list),axis=1)     
-        nn_idx 
+    # elif query_method == 'adversarial_edges':
+    #     max_iter = 10
+    #     #UNFINISHED
+    #     whole_adv_dis = TrainOp.EvalAdvEdgesEquery(Loader, Eval, num_query, pts_idx_list, index_knn, 'train', max_iter)
+    #     new_idx_list = np.sort(whole_adv_noise_dis,axis=1)[:,:num_query]  #12137*num_query
+    #     new_pts_idx_list = np.concatenate((pts_idx_list,new_idx_list),axis=1)     
+    #     nn_idx 
 
-    elif query_method == 'inputspc_coreset':
-        #inputs space distance
-        dis_feature = whole_train_data   
-        #dis_feature = dis_feature[np.argsort(sort)]
-        new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
-        i, i_b, i_e = 0,0,100
-        while i_e< len(dis_feature):
-            new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
-            i_b += 100; i_e += 100; i+=1; print('i---',i)
-        i_e = len(dis_feature)
-        new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
+    # elif query_method == 'inputspc_coreset':
+    #     #inputs space distance
+    #     dis_feature = whole_train_data   
+    #     #dis_feature = dis_feature[np.argsort(sort)]
+    #     new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
+    #     i, i_b, i_e = 0,0,100
+    #     while i_e< len(dis_feature):
+    #         new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
+    #         i_b += 100; i_e += 100; i+=1; print('i---',i)
+    #     i_e = len(dis_feature)
+    #     new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
 
-    elif query_method == 'feature_coreset':
-        dis_feature, loss_seg_bn = TrainOp.EvalOneEpoch(Loader, Eval, 'train')
-        new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
-        i, i_b, i_e = 0,0,100
-        while i_e< len(dis_feature):
-            new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
-            i_b += 100; i_e += 100; i+=1; print('i---',i)
-        i_e = len(dis_feature)
-        new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
+    # elif query_method == 'feature_coreset':
+    #     dis_feature, loss_seg_bn = TrainOp.EvalOneEpoch(Loader, Eval, 'train')
+    #     new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
+    #     i, i_b, i_e = 0,0,100
+    #     while i_e< len(dis_feature):
+    #         new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
+    #         i_b += 100; i_e += 100; i+=1; print('i---',i)
+    #     i_e = len(dis_feature)
+    #     new_pts_idx_list[i_b:i_e] = strategy.kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
     
 
-    elif query_method == 'uncertainty':
-        dis_feature, loss_seg_bn = TrainOp.EvalOneEpoch(Loader, Eval, 'train')
-        new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
-        i, i_b, i_e = 0,0,100
-        while i_e< len(dis_feature):
-            new_pts_idx_list[i_b:i_e] = strategy.uncertainty_query(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
-            i_b += 100; i_e += 100; i+=1; print('i---',i)
-        i_e = len(dis_feature)
-        new_pts_idx_list[i_b:i_e] = strategy.uncertainty_query(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
+    # elif query_method == 'uncertainty':
+    #     dis_feature, loss_seg_bn = TrainOp.EvalOneEpoch(Loader, Eval, 'train')
+    #     new_pts_idx_list = np.zeros([len(pts_idx_list),len(pts_idx_list[0,:]) + num_query], dtype=int)
+    #     i, i_b, i_e = 0,0,100
+    #     while i_e< len(dis_feature):
+    #         new_pts_idx_list[i_b:i_e] = strategy.uncertainty_query(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
+    #         i_b += 100; i_e += 100; i+=1; print('i---',i)
+    #     i_e = len(dis_feature)
+    #     new_pts_idx_list[i_b:i_e] = strategy.uncertainty_query(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
 
 
     #kcenter_greedy(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e])
@@ -280,9 +275,5 @@ for rd in range(1, num_round):
     #kcenter_greedy_uncertainty(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
     #kcenter_graph(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_div, l_uncer)
     #uncertainty_query(num_query, dis_feature[i_b:i_e], pts_idx_list[i_b:i_e], loss_seg_bn[i_b:i_e], l_uncer)
-    #adversatial_query()
-    dataOri = BASE_PATH + '/pts_idx_list.mat'
-    scio.savemat(dataOri, {'pts_idx_list_old':ori_pts_ipts_idx_listdx_list})
-    dataNew = BASE_PATH + '/new_pts_idx_list.mat'
-    scio.savemat(dataNew, {'pts_idx_list':new_pts_idx_list})
+
     pts_idx_list = new_pts_idx_list
