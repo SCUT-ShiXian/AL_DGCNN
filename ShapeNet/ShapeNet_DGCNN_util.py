@@ -534,10 +534,7 @@ class ShapeNet_IncompleteSup():
                 adv_noise_dis[0] = adv_noise_dis[0] + (Ori_predict==Adv_predict)*1*(np.max(adv_noise_dis)-np.min(adv_noise_dis))
 
                 iter += 1
-            print('iter',iter)
 
-            np.savetxt('/data2/lab-shixian/project/ActivePointCloud/Ori_predict.xyz',Ori_predict,fmt='%.6f')
-            np.savetxt('/data2/lab-shixian/project/ActivePointCloud/Adv_predict.xyz',Adv_predict,fmt='%.6f')
 
             whole_adv_noise_dis[START_FEATURE:END_FEATURE, ...] = adv_noise_dis[0:(END_FEATURE-START_FEATURE)]
             START_FEATURE += 1; END_FEATURE += 1
