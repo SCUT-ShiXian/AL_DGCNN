@@ -23,7 +23,7 @@ import ShapeNet_DGCNN_util as util
 import Tool
 from Tool import printout
 import Evaluation
-import strategy_coreset as strategy
+import strategy as strategy
 
 parser = arg.ArgumentParser(description='Take parameters')
 
