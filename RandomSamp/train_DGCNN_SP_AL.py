@@ -249,8 +249,5 @@ for rd in range(0, num_round):
             for i_sp in range(num_sp):
                 if sp_wl_one[i_sp] == 1:
                     wl_pts_list[i_ins, sp_one==i_sp] = 1.0
-        print('wl_pts_list', wl_pts_list.shape, np.sum(wl_pts_list))
-        print('sum(sp_wl_list)', np.sum(sp_wl_list))
-
 
 
