@@ -22,6 +22,9 @@ We provide scripts for ShapeNet experiments.
 ## Download training, validation and testing data for ShapeNet dataset. 
 Run prepareDataset.sh
 
+## Cluster Superpoints
+We provide cluster_demo.py in ./Superpoint_Cluster. Before training you nee to cluster and save superpoints for all samples.
+
 ## Active Training
 Run training script at ./RandomSamp/train_DGCNN_SP_AL.py
 
