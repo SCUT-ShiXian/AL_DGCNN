@@ -121,48 +121,26 @@ tmp = scio.loadmat(save_filepath)
 super_points_list_dir = 'Superpoints/super_points_list_mnfgeo500_lamda0.01_0to12137.npy'
 super_points_list = np.load(super_points_list_dir)   #12137,2048
 
-
+### active budget
 num_int = [1000, 1000, 3000, 5000]
+### num of samples
 num_sample = 12137
+### num of superpoints
 num_sp = 500
+### num of points in each sample
 num_pts = 2048
-##### Select annotated super-points
-
-def Read_xyz2(path, len_line):
-    r=open(path)
-    last=""
-   
-    sourceInLine=r.readlines()
-    for temp in sourceInLine:
-        temp=temp.strip('\n') + ' '
-        last+=temp 
-        
-    arr=last.split(' ') 
-    r.close()
-    del arr[-1]
-    arr = np.array(arr)
-    len_arr = int(len(arr)/len_line)
-    arr = arr.reshape((len_arr,len_line))
-    brr = np.zeros((len(arr), len_line))
-    for i in range(len(arr)):
-        for j in range(len_line):
-            brr[i,j] = float(arr[i,j])
-    brr = brr.astype(np.int64)
-    return brr
-
-#### number series [0~num_sample*num_sp]
-data_wl_pick = 'Dataset/ShapeNet/Preprocess/sp_wl_pick_list_sp500.xyz' # [num_sample*num_sp]
-####
-sp_wl_pick_list = Read_xyz2(data_wl_pick, int(num_sample*num_sp)) 
-sp_wl_list = np.zeros((num_sample, num_sp), int).reshape(-1) 
-sp_wl_list[sp_wl_pick_list.reshape(-1)[:num_int[0]]] = 1
+##### Randomly select init annotated super-points
+init_pick = np.arange(num_sample*num_sp)
+random.shuffle(init_pick)
+sp_wl_list = np.zeros((num_sample*num_sp), int)
+sp_wl_list[init_pick[:num_int[0]]] = 1
 sp_wl_list = sp_wl_list.reshape(num_sample, num_sp) 
 
 
-##Modify annotations based on superpoints
+### Modify annotations based on superpoints
 Loader.SP_SEG(super_points_list, num_sp)  
 
-
+### Transfer superpoints' labels to points' labels
 wl_pts_list = np.zeros((num_sample,num_pts), np.float32)
 for i_ins in range(num_sample):
     sp_wl_one = sp_wl_list[i_ins]
@@ -204,7 +182,6 @@ for rd in range(0, num_round):
 
         #### Evaluate One Epoch
         if epoch % 5 ==0:
-            # eval_avg_loss, eval_avg_acc, eval_perdata_miou, eval_pershape_miou = TrainOp.EvalOneEpoch(Loader, Eval)
             eval_avg_loss, eval_avg_acc, eval_perdata_miou, eval_pershape_miou = TrainOp.EvalOneEpoch(Loader, Eval)
 
             printout('\nEvaluationSet   avg loss {:.2f}   acc {:.2f}%   PerData mIoU {:.3f}%   PerShape mIoU {:.3f}%'.
@@ -233,14 +210,11 @@ for rd in range(0, num_round):
         #### output feature and entropy 
         num_query = num_int[rd+1]
         DIS_FEATURE, ETP_bn, prds = TrainOp.EvalOneEpoch(Loader, Eval, 'train')
-        ## feature (num_sample,pts,64)  entropy (num_sample,pts)
+        ## feature (num_sample,num_points,64)  entropy (num_sample,num_points)
         ### active selecting
         sp_wl_list, active_idx, entropy_list, shape_scores = strategy.diversity_uncertainty_shape(num_sample, num_sp, super_points_list, sp_wl_list, num_query, DIS_FEATURE, ETP_bn, l_uncer)
 
-        active_sppath = BASE_PATH + '/round_' + np.str(rd) + '_sp_wl_list.xyz'
-        np.savetxt(active_sppath,sp_wl_list,fmt='%.d')
-
-        #### annotate pts
+        #### Transfer superpoints' labels to points' labels
         wl_pts_list = np.zeros((12137,2048), np.float32)
         for i_ins in range(num_sample):
             sp_wl_one = sp_wl_list[i_ins]
