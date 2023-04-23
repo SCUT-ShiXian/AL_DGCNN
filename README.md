@@ -1,6 +1,4 @@
-Run DGCNN with randomly sampled points as labelled.
-
-Download training, validation and testing data for ShapeNet dataset.
+#Download training, validation and testing data for ShapeNet dataset.
 Run prepareDataset.sh
 
 #BaiduDisk is supported as this moment. Download and unzip to the ./ directory of this project. You should keep the
