@@ -1,7 +1,6 @@
 
 
 ## Introduction
-
 This repository contains the implementation of **Label-Efficient Point Cloud Semantic Segmentation: A
 Holistic Active Learning Approach**([arXiv](https://arxiv.org/abs/2101.06931)) in tensorflow.
 
