@@ -23,9 +23,15 @@ Run prepareDataset.sh
 
 ## Cluster Superpoints
 We provide cluster_demo.py in ./Superpoint_Cluster. Before training you nee to cluster and save superpoints for all samples.
+``` bash
+cd Superpoint_Cluster
+python cluster_demo.py
+```
 
 ## Active Training
-Run training script at ./RandomSamp/train_DGCNN_SP_AL.py
+``` bash
+python ./RandomSamp/train_DGCNN_SP_AL.py
+```
 
 ## Active Strategies
 Different active learning strategies in ./Strategies
