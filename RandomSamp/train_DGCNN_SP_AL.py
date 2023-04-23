@@ -118,7 +118,7 @@ save_filepath = os.path.join(save_path, 'SampIndex_m-{:.3f}.mat'.format(args.m))
 tmp = scio.loadmat(save_filepath)
 
 ### superpoint id for each point
-super_points_list_dir = 'Superpoints/super_points_list_mnfgeo500_lamda0.01_0to12137.npy'
+super_points_list_dir = 'Superpoints/superpoints500.npy'
 super_points_list = np.load(super_points_list_dir)   #12137,2048
 
 ### active budget
